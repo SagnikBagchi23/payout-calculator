@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bond Payout Calculator</title>
+
+  <!-- Icon stylesheet — local copy (remote server requires auth) -->
+  <link rel="stylesheet" href="fonts/groww-huge-standard.css">
+
+  <style>
+    /* ── Font faces ── */
+    @font-face {
+      font-family: 'Sohne';
+      src: url('fonts/Sohne-Kraftig.otf') format('opentype');
+      font-weight: 500;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GrowwSans';
+      src: url('fonts/GrowwSans-Regular.otf') format('opentype');
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GrowwSans';
+      src: url('fonts/GrowwSans-Medium.otf') format('opentype');
+      font-weight: 500;
+      font-display: swap;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'GrowwSans', -apple-system, sans-serif;
+      font-weight: 400;
+      color: var(--contentPrimary);
+      background: var(--backgroundSecondary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── DS typography classes (verbatim from starter block) ── */
+    .body-small        { font-family: 'GrowwSans', sans-serif; font-weight: 400; font-size: 12px; line-height: 18px; }
+    .body-small-heavy  { font-family: 'GrowwSans', sans-serif; font-weight: 500; font-size: 12px; line-height: 18px; }
+    .body-base         { font-family: 'GrowwSans', sans-serif; font-weight: 400; font-size: 14px; line-height: 20px; }
+    .body-base-heavy   { font-family: 'GrowwSans', sans-serif; font-weight: 500; font-size: 14px; line-height: 20px; }
+    .body-large        { font-family: 'GrowwSans', sans-serif; font-weight: 400; font-size: 16px; line-height: 24px; }
+    .body-large-heavy  { font-family: 'GrowwSans', sans-serif; font-weight: 500; font-size: 16px; line-height: 24px; }
+    .heading-eyebrow   { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 10px; line-height: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+    .heading-xsmall    { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 14px; line-height: 20px; }
+    .heading-small     { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 16px; line-height: 24px; }
+    .heading-base      { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 18px; line-height: 28px; }
+    .heading-large     { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 20px; line-height: 32px; }
+    .display-small     { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 24px; line-height: 32px; }
+    .display-base      { font-family: 'Sohne', sans-serif; font-weight: 500; font-size: 28px; line-height: 36px; }
+
+    /* ── IconView wrapper ── */
+    .mds-iconview { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: inherit; }
+    .mds-iconview .hgi { line-height: 1; color: inherit; }
+    .mds-iconview--xsmall { width: 12px; height: 12px; font-size: 12px; }
+    .mds-iconview--small  { width: 16px; height: 16px; font-size: 16px; }
+    .mds-iconview--medium { width: 20px; height: 20px; font-size: 20px; }
+    .mds-iconview--large  { width: 24px; height: 24px; font-size: 24px; }
+
+    /* ── Colour tokens — light mode ── */
+    :root {
+      --backgroundPrimary:        #FFFFFF;
+      --backgroundSurfaceZ1:      #FFFFFF;
+      --backgroundSurfaceZ2:      #F7F7F7;
+      --backgroundSecondary:      #F7F7F7;
+      --backgroundTertiary:       #EFF0F1;
+      --backgroundAccent:         #04B488;
+      --backgroundNegative:       #ED5533;
+      --backgroundPositive:       #04B488;
+      --backgroundWarning:        #E7A71E;
+      --backgroundAccentSubtle:   #E9FAF3;
+      --backgroundNegativeSubtle: #FFF1ED;
+      --backgroundPositiveSubtle: #E9FAF3;
+      --backgroundWarningSubtle:  #FFF7DE;
+      --backgroundDisabled:       #F7F7F7;
+      --backgroundTransparent:    transparent;
+      --borderPrimary:            #E7E8E9;
+      --borderAccent:             #04B488;
+      --borderNegative:           #ED5533;
+      --borderDisabled:           #EFF0F1;
+      --borderNeutral:            #353839;
+      --contentPrimary:           #353839;
+      --contentSecondary:         #7F8283;
+      --contentTertiary:          #898C8E;
+      --contentDisabled:          #BABBBC;
+      --contentAccent:            #04B488;
+      --contentPositive:          #04B488;
+      --contentNegative:          #ED5533;
+      --contentWarning:           #E7A71E;
+      --contentOnColour:          #FFFFFF;
+      --contentOnAccentSubtle:    #00825C;
+      --contentOnPositiveSubtle:  #00825C;
+      --contentOnNegativeSubtle:  #D23A15;
+      --contentOnWarningSubtle:   #A16B00;
+    }
+
+    /* ── Colour tokens — dark mode (toggled by html.dark class) ── */
+    html.dark {
+      --backgroundPrimary:        #060809;
+      --backgroundSecondary:      #151819;
+      --backgroundSurfaceZ1:      #151819;
+      --backgroundTertiary:       #1E2224;
+      --backgroundSurfaceZ2:      #1E2224;
+      --backgroundDisabled:       #151819;
+      --backgroundAccentSubtle:   #0F251D;
+      --backgroundPositiveSubtle: #0F251D;
+      --backgroundNegativeSubtle: #2C1711;
+      --backgroundWarningSubtle:  #291F0E;
+      --backgroundNegative:       #FF5E3B;
+      --borderPrimary:            #252A2C;
+      --borderDisabled:           #1E2224;
+      --borderNeutral:            #F2F5F7;
+      --borderNegative:           #FF5E3B;
+      --contentPrimary:           #F2F5F7;
+      --contentSecondary:         #989EA0;
+      --contentTertiary:          #696E70;
+      --contentDisabled:          #44494B;
+      --contentOnColour:          #F2F5F7;
+      --contentOnAccentSubtle:    #46D5A7;
+      --contentOnPositiveSubtle:  #46D5A7;
+      --contentOnNegativeSubtle:  #FF9479;
+      --contentOnWarningSubtle:   #F5BC56;
+      --contentNegative:          #FF5E3B;
+    }
+  </style>
+
+  <style>
+    /* ═══════════════════════════════════════
+       CONTROL PANEL (left, fixed)
+    ═══════════════════════════════════════ */
+    .control-panel {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--backgroundPrimary);
+      border: 1px solid var(--borderPrimary);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-width: 116px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      z-index: 100;
+    }
+
+    .ctrl-label {
+      display: block;
+      color: var(--contentSecondary);
+      margin-bottom: 8px;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 2px;
+      background: var(--backgroundTertiary);
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 5px 8px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--contentSecondary);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    .toggle-btn.active {
+      background: var(--backgroundPrimary);
+      color: var(--contentPrimary);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+
+    /* ═══════════════════════════════════════
+       SHARED CARD SHELL
+    ═══════════════════════════════════════ */
+    .payout-card {
+      width: 360px;
+      background: var(--backgroundPrimary);
+      border-bottom: 1px solid var(--borderPrimary);
+      display: none;
+    }
+
+    .payout-card.active { display: block; }
+
+    /* Shared track layers */
+    .track-bg {
+      position: absolute;
+      left: 0; right: 0;
+      height: 6px;
+      border-radius: 6px;
+      background: var(--backgroundTertiary);
+      z-index: 0;
+    }
+
+    .track-fill {
+      position: absolute;
+      left: 0;
+      height: 6px;
+      border-radius: 6px;
+      background: var(--borderAccent);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Shared detail row */
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Shared secondary button */
+    .btn-secondary {
+      width: 100%;
+      height: 48px;
+      border-radius: 8px;
+      border: 1px solid var(--borderPrimary);
+      background: transparent;
+      color: var(--contentPrimary);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-secondary:active { opacity: 0.7; }
+
+    /* ═══════════════════════════════════════
+       ITERATION 1
+    ═══════════════════════════════════════ */
+    .iter-1 { padding-bottom: 32px; }
+
+    .v1-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 16px 8px;
+    }
+
+    .btn-tertiary {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: var(--contentAccent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .v1-inner { padding: 4px 16px 0; }
+
+    .v1-slider-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .v1-units-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .v1-slider-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .v1-slider-rail {
+      position: relative;
+      width: 100%;
+      height: 34px;
+      display: flex;
+      align-items: center;
+    }
+
+    .iter-1 input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      background: transparent;
+      position: relative;
+      z-index: 2;
+    }
+
+    .iter-1 input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.07);
+    }
+
+    .iter-1 input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+
+    .v1-invest-get {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+    }
+
+    .invest-group { display: flex; flex-direction: column; align-items: flex-start; }
+    .get-group    { display: flex; flex-direction: column; align-items: flex-end; }
+
+    .v1-divider-wrap { padding: 16px 0; width: 100%; }
+    .v1-divider { width: 100%; height: 1px; background: var(--borderPrimary); }
+
+    .v1-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ═══════════════════════════════════════
+       ITERATION 3
+    ═══════════════════════════════════════ */
+    .iter-3 {
+      padding-bottom: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .iter-3.active { display: flex; }
+
+    .v3-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 16px 8px;
+    }
+
+    .v3-main {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .v3-top-half {
+      width: 328px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .v3-invest-get {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .v3-invest-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 148px;
+    }
+
+    .v3-get-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 148px;
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .v3-slider-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .v3-slider-rail {
+      position: relative;
+      width: 100%;
+      height: 34px;
+      display: flex;
+      align-items: center;
+    }
+
+    .iter-3 input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      background: transparent;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Circular green thumb with white ring for v3 */
+    .iter-3 input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--backgroundAccent);
+      border: 2.5px solid var(--backgroundPrimary);
+      box-shadow: 0 0 0 2px var(--backgroundAccent);
+      cursor: grab;
+    }
+
+    .iter-3 input[type="range"]::-moz-range-thumb {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: var(--backgroundAccent);
+      border: 2.5px solid var(--backgroundPrimary);
+      box-shadow: 0 0 0 2px var(--backgroundAccent);
+      cursor: grab;
+    }
+
+    .v3-pills {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .v3-pill {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 100px;
+      border: 1px solid var(--borderPrimary);
+      background: transparent;
+      color: var(--contentPrimary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+    }
+
+    .v3-pill.active {
+      background: var(--backgroundAccentSubtle);
+      border-color: var(--borderAccent);
+      color: var(--contentAccent);
+    }
+
+    .v3-icon-pill {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--borderPrimary);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--contentSecondary);
+      flex-shrink: 0;
+    }
+
+    .v3-payouts {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v3-payouts-label {
+      padding: 8px 16px 4px;
+    }
+
+    .v3-payout-rows {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v3-payout-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+
+    .v3-row-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .v3-divider-wrap { padding-left: 16px; }
+    .v3-divider { height: 1px; background: var(--borderPrimary); }
+
+    .v3-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--backgroundPrimary));
+      pointer-events: none;
+    }
+
+    .v3-btn-wrap { padding: 8px 16px; }
+
+    /* ═══════════════════════════════════════
+       ITERATION 2
+    ═══════════════════════════════════════ */
+    .iter-2 {
+      padding-bottom: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .iter-2.active { display: flex; }
+
+    .v2-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 16px 8px;
+    }
+
+    .contained-iconview {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--borderPrimary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--contentPrimary);
+    }
+
+    .v2-body {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Invest / get labels row — above slider */
+    .v2-invest-get {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 100%;
+      position: relative;
+    }
+
+    .v2-chevrons {
+      position: absolute;
+      left: 50%;
+      bottom: 7px;
+      transform: translateX(-50%);
+      display: flex;
+      color: var(--contentTertiary);
+      gap: -2px;
+    }
+
+    /* Slider + floating badge */
+    .v2-slider-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .v2-badge-row {
+      position: relative;
+      width: 100%;
+      height: 26px;
+    }
+
+    .v2-badge-inner {
+      position: absolute;
+      bottom: 0;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .v2-badge {
+      background: var(--backgroundSecondary);
+      border-radius: 4px;
+      padding: 3px 8px;
+      color: var(--contentPrimary);
+      white-space: nowrap;
+    }
+
+    .v2-caret {
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid var(--backgroundSecondary);
+    }
+
+    .v2-slider-rail {
+      position: relative;
+      width: 100%;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      margin-top: -2px;
+    }
+
+    .iter-2 input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      background: transparent;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Green pill thumb for v2 */
+    .iter-2 input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 16px;
+      border-radius: 100px;
+      background: var(--backgroundAccent);
+      cursor: grab;
+    }
+
+    .iter-2 input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 16px;
+      border-radius: 100px;
+      background: var(--backgroundAccent);
+      border: none;
+      cursor: grab;
+    }
+
+    /* Stats rows */
+    .v2-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    /* Button wrapper */
+    .v2-btn-wrap {
+      padding: 0 0 0 0; /* button is already inside v2-body which has px-16 */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       Control Panel
+  ══════════════════════════════════════ -->
+  <nav class="control-panel">
+    <div>
+      <span class="ctrl-label body-small-heavy">Mode</span>
+      <div class="toggle-group">
+        <button class="toggle-btn body-small active" id="lightBtn" onclick="setMode('light')">Light</button>
+        <button class="toggle-btn body-small" id="darkBtn" onclick="setMode('dark')">Dark</button>
+      </div>
+    </div>
+    <div>
+      <span class="ctrl-label body-small-heavy">Iteration</span>
+      <div class="toggle-group">
+        <button class="toggle-btn body-small active" id="iter1Btn" onclick="setIter(1)">v1</button>
+        <button class="toggle-btn body-small" id="iter2Btn" onclick="setIter(2)">v2</button>
+        <button class="toggle-btn body-small" id="iter3Btn" onclick="setIter(3)">v3</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════
+       Iteration 1
+  ══════════════════════════════════════ -->
+  <div class="payout-card iter-1 active" id="card1">
+
+    <div class="v1-header">
+      <h2 class="heading-base">Calculate your payout</h2>
+      <button class="btn-tertiary body-base-heavy">
+        <span class="mds-iconview mds-iconview--small">
+          <i class="gh-standard-pencil-edit-01"></i>
+        </span>
+        Edit
+      </button>
+    </div>
+
+    <div class="v1-inner">
+      <div class="v1-slider-section">
+
+        <div class="v1-units-display">
+          <span class="body-small-heavy" style="color:var(--contentSecondary);">Units</span>
+          <span class="display-base" id="v1-units">250</span>
+        </div>
+
+        <div class="v1-slider-wrapper">
+          <div class="v1-slider-rail">
+            <div class="track-bg"></div>
+            <div class="track-fill" id="v1-fill"></div>
+            <input type="range" id="v1-slider" min="1" max="500" value="250" step="1">
+          </div>
+
+          <div class="v1-invest-get">
+            <div class="invest-group">
+              <span class="body-small" style="color:var(--contentSecondary);">You invest</span>
+              <span class="heading-base" id="v1-invest">₹2,50,000</span>
+            </div>
+            <div class="get-group">
+              <span class="body-small" style="color:var(--contentSecondary);">You get</span>
+              <span class="heading-base" style="color:var(--contentPositive);" id="v1-get">₹3,93,375</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="v1-divider-wrap"><div class="v1-divider"></div></div>
+
+      <div class="v1-details">
+        <div class="detail-row">
+          <span class="body-base" style="color:var(--contentSecondary);">Avg. monthly interest</span>
+          <span class="body-base-heavy" id="v1-monthlyInt">₹1,620</span>
+        </div>
+        <div class="detail-row">
+          <span class="body-base" style="color:var(--contentSecondary);">Monthly principal return</span>
+          <span class="body-base-heavy" id="v1-monthlyPrinc">₹10,000</span>
+        </div>
+      </div>
+
+      <button class="btn-secondary body-large-heavy" style="margin-top:24px;">View payout</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Iteration 2
+  ══════════════════════════════════════ -->
+  <div class="payout-card iter-2" id="card2">
+
+    <div class="v2-header">
+      <h2 class="heading-base">Calculate your payout</h2>
+      <div class="contained-iconview">
+        <span class="mds-iconview mds-iconview--small">
+          <i class="gh-standard-pencil-edit-01"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="v2-body">
+
+      <!-- Invest / Get labels with chevrons -->
+      <div class="v2-invest-get">
+        <div class="invest-group">
+          <span class="heading-eyebrow" style="color:var(--contentSecondary);">You invest</span>
+          <span class="heading-base" id="v2-invest">₹2,50,000</span>
+        </div>
+        <div class="v2-chevrons">
+          <span class="mds-iconview mds-iconview--small"><i class="gh-standard-chevron-right-double"></i></span>
+        </div>
+        <div class="get-group">
+          <span class="heading-eyebrow" style="color:var(--contentSecondary); display:block; text-align:right;">You get</span>
+          <span class="heading-base" style="color:var(--contentPositive);" id="v2-get">₹3,93,375</span>
+        </div>
+      </div>
+
+      <!-- Slider with floating unit badge -->
+      <div class="v2-slider-block">
+        <div class="v2-badge-row">
+          <div class="v2-badge-inner" id="v2-badgeInner">
+            <div class="v2-badge heading-eyebrow" id="v2-units">250</div>
+            <div class="v2-caret"></div>
+          </div>
+        </div>
+        <div class="v2-slider-rail">
+          <div class="track-bg"></div>
+          <div class="track-fill" id="v2-fill"></div>
+          <input type="range" id="v2-slider" min="1" max="500" value="250" step="1">
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="v2-stats">
+        <div class="detail-row">
+          <span class="body-base" style="color:var(--contentSecondary);">Total interest</span>
+          <span class="body-base-heavy" style="color:var(--contentPositive);" id="v2-totalInt">+₹1,43,375</span>
+        </div>
+        <div class="detail-row">
+          <span class="body-base" style="color:var(--contentSecondary);">Avg. monthly interest</span>
+          <span class="body-base-heavy" style="color:var(--contentPositive);" id="v2-monthlyInt">+₹1,620</span>
+        </div>
+        <div class="detail-row">
+          <span class="body-base" style="color:var(--contentSecondary);">Monthly principal return</span>
+          <span class="body-base-heavy" id="v2-monthlyPrinc">₹10,000</span>
+        </div>
+      </div>
+
+      <button class="btn-secondary body-large-heavy">View payout schedule</button>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       Iteration 3
+  ══════════════════════════════════════ -->
+  <div class="payout-card iter-3" id="card3">
+
+    <div class="v3-header">
+      <h2 class="heading-base">Calculate your payout</h2>
+      <div class="contained-iconview" style="opacity:0">
+        <span class="mds-iconview mds-iconview--small">
+          <i class="gh-standard-pencil-edit-01"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="v3-main">
+
+      <!-- Top half: invest/get + slider + pills -->
+      <div class="v3-top-half">
+
+        <!-- Invest / Get two-column header -->
+        <div class="v3-invest-get">
+          <div class="v3-invest-col">
+            <span class="heading-eyebrow" style="color:var(--contentSecondary)">You invest</span>
+            <span class="display-small" id="v3-invest">₹2,50,000</span>
+            <span class="body-small" style="color:var(--contentSecondary)" id="v3-units-label">250 units</span>
+          </div>
+          <div class="v3-get-col">
+            <span class="heading-eyebrow" style="color:var(--contentSecondary)">You get</span>
+            <span class="display-small" style="color:var(--contentPositive)" id="v3-get">₹3,10,000</span>
+            <span class="body-small">
+              <span style="color:var(--contentSecondary)">Interest </span><span style="color:var(--contentPositive)" id="v3-total-int">+₹60,000</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Slider + quick pills -->
+        <div class="v3-slider-pills">
+          <div class="v3-slider-rail">
+            <div class="track-bg"></div>
+            <div class="track-fill" id="v3-fill"></div>
+            <input type="range" id="v3-slider" min="1" max="500" value="250" step="1">
+          </div>
+          <div class="v3-pills">
+            <button class="v3-pill body-small" id="v3-pill-25"  onclick="setV3Units(25)">₹25K</button>
+            <button class="v3-pill body-small" id="v3-pill-50"  onclick="setV3Units(50)">₹50K</button>
+            <button class="v3-pill body-small" id="v3-pill-100" onclick="setV3Units(100)">₹1L</button>
+            <button class="v3-pill body-small" id="v3-pill-200" onclick="setV3Units(200)">₹2L</button>
+            <button class="v3-icon-pill">
+              <span class="mds-iconview mds-iconview--small"><i class="gh-standard-pencil-edit-01"></i></span>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /v3-top-half -->
+
+      <!-- Payouts section -->
+      <div class="v3-payouts">
+        <div class="v3-payouts-label">
+          <span class="heading-xsmall" style="color:var(--contentSecondary)">Payouts</span>
+        </div>
+
+        <div class="v3-payout-rows">
+          <!-- Row 1 — nearest payout -->
+          <div class="v3-payout-row">
+            <div class="v3-row-info">
+              <span class="body-base-heavy">25 Aug</span>
+              <span class="body-small" style="color:var(--contentSecondary)">Interest payout</span>
+            </div>
+            <span class="body-base-heavy" style="color:var(--contentPositive)" id="v3-p1">+₹10,000</span>
+          </div>
+          <div class="v3-divider-wrap"><div class="v3-divider"></div></div>
+
+          <!-- Row 2 -->
+          <div class="v3-payout-row">
+            <div class="v3-row-info">
+              <span class="body-base-heavy">25 Feb '27</span>
+              <span class="body-small" style="color:var(--contentSecondary)">Interest payout</span>
+            </div>
+            <span class="body-base-heavy" style="color:var(--contentPositive)" id="v3-p2">+₹10,000</span>
+          </div>
+          <div class="v3-divider-wrap"><div class="v3-divider"></div></div>
+
+          <!-- Row 3 — fades under gradient -->
+          <div class="v3-payout-row" style="opacity:0.45">
+            <div class="v3-row-info">
+              <span class="body-base-heavy">25 Aug '27</span>
+              <span class="body-small" style="color:var(--contentSecondary)">Interest payout</span>
+            </div>
+            <span class="body-base-heavy" style="color:var(--contentPositive)" id="v3-p3">+₹10,000</span>
+          </div>
+
+          <!-- Gradient fade overlay -->
+          <div class="v3-gradient"></div>
+        </div>
+
+        <div class="v3-btn-wrap">
+          <button class="btn-secondary body-base-heavy" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span class="mds-iconview mds-iconview--small"><i class="gh-standard-calendar-01"></i></span>
+            View payout schedule
+          </button>
+        </div>
+      </div><!-- /v3-payouts -->
+
+    </div><!-- /v3-main -->
+  </div>
+
+  <script>
+    /* ── Per-unit constants (derived from Figma values at 250 units) ── */
+    const FACE_VALUE_PER_U       = 1000;            // ₹1,000 face value
+    const TOTAL_RETURN_PER_U     = 393375 / 250;    // ₹1,573.50
+    const MONTHLY_INTEREST_PER_U = 1620   / 250;    // ₹6.48
+    const MONTHLY_PRINC_PER_U    = 10000  / 250;    // ₹40.00
+    const TOTAL_INTEREST_PER_U   = 143375 / 250;    // ₹573.50
+
+    /* ── V3: 8% p.a. semi-annual corporate bond, 3-year tenor ── */
+    /* At 250 units: invest ₹2,50,000 → get ₹3,10,000, total interest ₹60,000  */
+    const V3_FACE_VAL  = 1000;   // face value per unit
+    const V3_SEMI_INT  = 40;     // semi-annual coupon per unit (8% ÷ 2 × ₹1,000)
+    const V3_TOTAL_INT = 240;    // total interest per unit (6 payments × ₹40)
+    const V3_TOTAL_RET = 1240;   // total return per unit (principal + interest)
+
+    /* Quick-pill unit amounts: ₹25K=25u, ₹50K=50u, ₹1L=100u, ₹2L=200u */
+    const V3_PILL_UNITS = { 25: 'v3-pill-25', 50: 'v3-pill-50', 100: 'v3-pill-100', 200: 'v3-pill-200' };
+
+    function inr(n) {
+      return '₹' + Math.round(n).toLocaleString('en-IN');
+    }
+
+    /* Returns thumb-center x offset in px from left edge of the rail */
+    function fillAndCenter(slider, fillEl, thumbHalfPx) {
+      const pct = (slider.value - slider.min) / (slider.max - slider.min);
+      const railW = slider.offsetWidth;
+      const usable = railW - 2 * thumbHalfPx;
+      const centerX = thumbHalfPx + pct * usable;
+      fillEl.style.width = centerX + 'px';
+      return centerX;
+    }
+
+    /* ── Iteration 1 ── */
+    const v1Slider = document.getElementById('v1-slider');
+    const v1Fill   = document.getElementById('v1-fill');
+
+    function updateV1(units) {
+      document.getElementById('v1-units').textContent      = units;
+      document.getElementById('v1-invest').textContent     = inr(units * FACE_VALUE_PER_U);
+      document.getElementById('v1-get').textContent        = inr(units * TOTAL_RETURN_PER_U);
+      document.getElementById('v1-monthlyInt').textContent = inr(units * MONTHLY_INTEREST_PER_U);
+      document.getElementById('v1-monthlyPrinc').textContent = inr(units * MONTHLY_PRINC_PER_U);
+      fillAndCenter(v1Slider, v1Fill, 12); // circle thumb: 24px → half = 12px
+    }
+
+    v1Slider.addEventListener('input', e => updateV1(+e.target.value));
+
+    /* ── Iteration 2 ── */
+    const v2Slider     = document.getElementById('v2-slider');
+    const v2Fill       = document.getElementById('v2-fill');
+    const v2BadgeInner = document.getElementById('v2-badgeInner');
+    const v2UnitsEl    = document.getElementById('v2-units');
+
+    function updateV2(units) {
+      document.getElementById('v2-invest').textContent       = inr(units * FACE_VALUE_PER_U);
+      document.getElementById('v2-get').textContent          = inr(units * TOTAL_RETURN_PER_U);
+      document.getElementById('v2-totalInt').textContent     = '+' + inr(units * TOTAL_INTEREST_PER_U);
+      document.getElementById('v2-monthlyInt').textContent   = '+' + inr(units * MONTHLY_INTEREST_PER_U);
+      document.getElementById('v2-monthlyPrinc').textContent = inr(units * MONTHLY_PRINC_PER_U);
+      v2UnitsEl.textContent = units;
+
+      // Pill thumb: 24px wide → half = 12px; position badge at thumb center
+      const centerX = fillAndCenter(v2Slider, v2Fill, 12);
+      v2BadgeInner.style.left = centerX + 'px';
+    }
+
+    v2Slider.addEventListener('input', e => updateV2(+e.target.value));
+
+    /* ── Iteration 3 ── */
+    const v3Slider = document.getElementById('v3-slider');
+    const v3Fill   = document.getElementById('v3-fill');
+
+    function updateV3(units) {
+      document.getElementById('v3-invest').textContent     = inr(units * V3_FACE_VAL);
+      document.getElementById('v3-units-label').textContent = units + ' units';
+      document.getElementById('v3-get').textContent        = inr(units * V3_TOTAL_RET);
+      document.getElementById('v3-total-int').textContent  = '+' + inr(units * V3_TOTAL_INT);
+      document.getElementById('v3-p1').textContent         = '+' + inr(units * V3_SEMI_INT);
+      document.getElementById('v3-p2').textContent         = '+' + inr(units * V3_SEMI_INT);
+      document.getElementById('v3-p3').textContent         = '+' + inr(units * V3_SEMI_INT);
+      fillAndCenter(v3Slider, v3Fill, 12); // circular 24px thumb → half = 12px
+    }
+
+    function setV3Units(units) {
+      v3Slider.value = units;
+      updateV3(units);
+      // highlight the matching pill, clear others
+      Object.entries(V3_PILL_UNITS).forEach(([u, id]) => {
+        document.getElementById(id).classList.toggle('active', +u === units);
+      });
+    }
+
+    v3Slider.addEventListener('input', e => {
+      updateV3(+e.target.value);
+      // clear all pill active states on manual drag
+      Object.values(V3_PILL_UNITS).forEach(id => document.getElementById(id).classList.remove('active'));
+    });
+
+    /* ── Mode toggle ── */
+    function setMode(mode) {
+      document.documentElement.classList.toggle('dark', mode === 'dark');
+      document.getElementById('lightBtn').classList.toggle('active', mode === 'light');
+      document.getElementById('darkBtn').classList.toggle('active', mode === 'dark');
+    }
+
+    /* ── Iteration toggle ── */
+    function setIter(n) {
+      document.getElementById('card1').classList.toggle('active', n === 1);
+      document.getElementById('card2').classList.toggle('active', n === 2);
+      document.getElementById('card3').classList.toggle('active', n === 3);
+      document.getElementById('iter1Btn').classList.toggle('active', n === 1);
+      document.getElementById('iter2Btn').classList.toggle('active', n === 2);
+      document.getElementById('iter3Btn').classList.toggle('active', n === 3);
+      requestAnimationFrame(() => {
+        if (n === 1) updateV1(+v1Slider.value);
+        if (n === 2) updateV2(+v2Slider.value);
+        if (n === 3) updateV3(+v3Slider.value);
+      });
+    }
+
+    /* ── Init ── */
+    requestAnimationFrame(() => {
+      updateV1(250);
+      updateV2(250);
+      updateV3(250);
+    });
+
+    window.addEventListener('resize', () => {
+      updateV1(+v1Slider.value);
+      updateV2(+v2Slider.value);
+      updateV3(+v3Slider.value);
+    });
+  </script>
+</body>
+</html>
