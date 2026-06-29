@@ -9,6 +9,14 @@
   <link rel="stylesheet" href="fonts/groww-huge-standard.css">
 
   <style>
+    /* ── Icon font — inline override removes query-string from linked CSS src ── */
+    @font-face {
+      font-family: 'groww-huge-standard';
+      src: url('fonts/groww-huge-standard.woff2') format('woff2'),
+           url('fonts/groww-huge-standard.otf') format('opentype');
+      font-display: block;
+    }
+
     /* ── Font faces ── */
     @font-face {
       font-family: 'Sohne';
@@ -442,7 +450,7 @@
       height: 24px;
       border-radius: 50%;
       background-color: var(--backgroundAccent);
-      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><line x1='8' y1='9' x2='16' y2='9' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='8' y1='12' x2='16' y2='12' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='8' y1='15' x2='16' y2='15' stroke='white' stroke-width='1.5' stroke-linecap='round'/></svg>");
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><line x1='7.5' y1='9' x2='16.5' y2='9' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='7.5' y1='12' x2='16.5' y2='12' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='7.5' y1='15' x2='16.5' y2='15' stroke='white' stroke-width='1.5' stroke-linecap='round'/></svg>");
       background-repeat: no-repeat;
       background-position: center;
       border: none;
@@ -455,7 +463,7 @@
       height: 24px;
       border-radius: 50%;
       background-color: var(--backgroundAccent);
-      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><line x1='8' y1='9' x2='16' y2='9' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='8' y1='12' x2='16' y2='12' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='8' y1='15' x2='16' y2='15' stroke='white' stroke-width='1.5' stroke-linecap='round'/></svg>");
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><line x1='7.5' y1='9' x2='16.5' y2='9' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='7.5' y1='12' x2='16.5' y2='12' stroke='white' stroke-width='1.5' stroke-linecap='round'/><line x1='7.5' y1='15' x2='16.5' y2='15' stroke='white' stroke-width='1.5' stroke-linecap='round'/></svg>");
       background-repeat: no-repeat;
       background-position: center;
       border: none;
@@ -483,9 +491,10 @@
     }
 
     .v3-pill.active {
-      background: var(--backgroundAccentSubtle);
-      border-color: var(--borderAccent);
-      color: var(--contentOnAccentSubtle);
+      background: var(--backgroundTertiary);
+      border-width: 1.5px;
+      border-color: var(--borderNeutral);
+      color: var(--contentPrimary);
     }
 
     .v3-icon-pill {
