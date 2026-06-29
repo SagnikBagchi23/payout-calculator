@@ -12,21 +12,24 @@
     /* ── Font faces ── */
     @font-face {
       font-family: 'Sohne';
-      src: url('fonts/Sohne-Kraftig.otf') format('opentype');
+      src: local('Sohne Kraftig'), url('fonts/Sohne-Kraftig.otf') format('opentype');
       font-weight: 500;
-      font-display: swap;
+      font-style: normal;
+      font-display: block;
     }
     @font-face {
       font-family: 'GrowwSans';
-      src: url('fonts/GrowwSans-Regular.otf') format('opentype');
+      src: local('GrowwSans Regular'), url('fonts/GrowwSans-Regular.otf') format('opentype');
       font-weight: 400;
-      font-display: swap;
+      font-style: normal;
+      font-display: block;
     }
     @font-face {
       font-family: 'GrowwSans';
-      src: url('fonts/GrowwSans-Medium.otf') format('opentype');
+      src: local('GrowwSans Medium'), url('fonts/GrowwSans-Medium.otf') format('opentype');
       font-weight: 500;
-      font-display: swap;
+      font-style: normal;
+      font-display: block;
     }
 
     /* ── Reset ── */
@@ -430,25 +433,24 @@
       z-index: 2;
     }
 
-    /* Circular green thumb with white ring for v3 */
     .iter-3 input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 24px;
       height: 24px;
       border-radius: 50%;
       background: var(--backgroundAccent);
-      border: 2.5px solid var(--backgroundPrimary);
-      box-shadow: 0 0 0 2px var(--backgroundAccent);
+      border: none;
+      box-shadow: none;
       cursor: grab;
     }
 
     .iter-3 input[type="range"]::-moz-range-thumb {
-      width: 19px;
-      height: 19px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--backgroundAccent);
-      border: 2.5px solid var(--backgroundPrimary);
-      box-shadow: 0 0 0 2px var(--backgroundAccent);
+      border: none;
+      box-shadow: none;
       cursor: grab;
     }
 
@@ -456,6 +458,7 @@
       display: flex;
       gap: 8px;
       align-items: center;
+      justify-content: center;
     }
 
     .v3-pill {
